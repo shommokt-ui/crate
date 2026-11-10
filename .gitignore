@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+.runtime/
+.pytest_cache/
+test-results/
+playwright-report/
+build/
+dist/
+Crate.app/
+*.spec
