@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Crate">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+  <link rel="manifest" href="/static/manifest.webmanifest">
+  <meta name="color-scheme" content="dark light">
+  <meta name="crate-settings" content="__SETTINGS__">
+  <meta name="description" content="Downloading music made simple.">
+  <title>Crate — Downloading music made simple</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <script src="/static/theme.js"></script>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/settings.js" defer></script>
+  <script src="/static/cursor.js" defer></script>
+  <script src="/static/history.js" defer></script>
+  <script src="/static/wave.js" defer></script>
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="icon-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M5 15v5h14v-5"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="icon-music" viewBox="0 0 24 24"><path d="M9 17V5l11-2v12M9 8l11-2"/><ellipse cx="6" cy="18" rx="3" ry="3"/><ellipse cx="17" cy="16" rx="3" ry="3"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></symbol>
+    <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="icon-box" viewBox="0 0 24 24"><path d="m3 7 9-5 9 5v11l-9 5-9-5V7Zm0 0 9 5 9-5M12 12v11"/></symbol>
+  </svg>
+
+  <div class="backdrop" aria-hidden="true"><i class="grid"></i></div>
+  <canvas id="cursor-canvas" class="cursor-canvas" aria-hidden="true"></canvas>
+
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Crate home"><span class="brand-mark"><img src="/static/logo.svg" alt="" width="36" height="36"></span>crate</a>
+      <div class="header-actions">
+      <button id="history-button" class="theme-toggle" type="button" aria-label="History" title="History"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5M3.5 4v4.5H8M12 7.5V12l3 2"/></svg></button>
+      <button id="settings-button" class="theme-toggle" type="button" aria-label="Settings" title="Settings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme">
+        <svg class="theme-icon sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+        <svg class="theme-icon moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/></svg>
+      </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <h1 id="page-title">Downloading music <span>made simple</span></h1>
+      </section>
+
+      <section class="workspace" aria-label="Downloader">
+        <form id="playlist-form" novalidate>
+          <label class="sr-only" for="playlist-url">Link</label>
+          <div class="url-control"><svg class="icon link-icon" aria-hidden="true"><use href="#icon-link"/></svg><input id="playlist-url" name="url" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="Paste a link or type a song" required><button class="button button-primary" id="preview-button" type="submit"><span id="preview-label">Load</span><svg class="icon" id="preview-arrow" aria-hidden="true"><use href="#icon-arrow"/></svg><span class="spinner" id="preview-spinner" hidden aria-hidden="true"></span></button></div>
+          <p class="input-help" id="url-help" hidden></p>
+        </form>
+
+        <div id="notice" class="notice" role="status" aria-live="polite" hidden><span id="notice-text"></span><button id="retry-button" type="button" class="text-button" hidden>Retry</button></div>
+
+        <section id="playlist-panel" class="playlist-panel" aria-labelledby="playlist-title" hidden>
+          <div class="playlist-overview">
+            <div class="cover-wrap"><img id="playlist-artwork" class="playlist-artwork" alt="" hidden><div id="cover-fallback" class="cover-fallback" aria-hidden="true"><svg class="icon"><use href="#icon-music"/></svg></div></div>
+            <div class="playlist-details"><h2 id="playlist-title" tabindex="-1">Playlist</h2><p id="playlist-byline"></p></div>
+            <span id="playlist-count" class="playlist-count"></span>
+          </div>
+
+          <section class="destination" id="destination" aria-label="Save to">
+            <div class="destination-row">
+              <span class="destination-label">Save to</span>
+              <button id="folder-button" class="button button-ghost folder-button" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span id="folder-name">Crate</span></button>
+            </div>
+            <p class="setting-note" id="destination-note"></p>
+          </section>
+
+          <div id="download-options" class="download-options">
+            <fieldset class="format-fieldset"><legend class="sr-only">Format</legend><div class="format-options"><label class="format-option"><input type="radio" name="format" value="mp3" checked><span>MP3</span></label><label class="format-option"><input type="radio" name="format" value="aac"><span>AAC</span></label><label class="format-option"><input type="radio" name="format" value="opus"><span>Opus</span></label><label class="format-option"><input type="radio" name="format" value="flac"><span>FLAC</span></label><label class="format-option"><input type="radio" name="format" value="wav"><span>WAV</span></label><label class="format-option"><input type="radio" name="format" value="original"><span>Original</span></label></div><p id="format-note" class="format-note">Plays on any device.</p><p id="format-help" class="format-help" hidden></p></fieldset>
+            <button id="download-button" class="button button-primary" type="button"><svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg><span>Download</span></button>
+          </div>
+
+          <section id="job-panel" class="job-panel" aria-labelledby="job-title" hidden>
+            <div class="job-top"><div><p id="job-eyebrow" class="eyebrow" hidden></p><h3 id="job-title">Downloading</h3></div><span id="job-percentage" class="job-percentage" aria-hidden="true">0<span>%</span></span></div>
+            <div id="progress-bar" class="progress-bar" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><canvas id="wave-canvas" class="wave-canvas" aria-hidden="true"></canvas></div>
+            <div class="job-meta"><p id="job-message" role="status" aria-live="polite">Starting…</p><button id="cancel-button" class="text-button muted" type="button">Cancel</button></div>
+            <div id="job-actions" class="job-actions" hidden><a id="zip-download" class="button button-primary" href="#" download hidden><svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg><span>Save</span></a><button id="retry-job-button" class="button button-ghost" type="button" hidden>Try again</button><button id="start-another" class="text-button" type="button">New link</button></div>
+          </section>
+
+          <div class="track-list-heading" id="track-list-heading"><div class="track-list-left"><button id="select-toggle" type="button" class="text-button" hidden>Select none</button><h3>Tracks</h3></div><span id="track-list-summary" aria-live="polite"></span></div>
+          <div id="track-filter" class="track-filter" hidden>
+            <label class="sr-only" for="track-search">Filter tracks by title or artist</label>
+            <div class="track-search-control"><input id="track-search" type="search" placeholder="Find a title or artist" autocomplete="off" aria-controls="track-list" aria-describedby="track-filter-summary"><button id="track-search-clear" class="text-button" type="button" hidden>Clear</button></div>
+            <p id="track-filter-summary" class="track-filter-summary" role="status"></p>
+          </div>
+          <p id="track-empty" class="track-empty" hidden>No tracks match. Try another title or artist.</p>
+          <ol id="track-list" class="track-list" aria-label="Tracks"></ol>
+        </section>
+
+        <div id="how-it-works" class="how-it-works">
+          <div class="how-choice">
+            <article class="how-tile"><span class="how-icon"><svg class="icon" aria-hidden="true"><use href="#icon-music"/></svg></span><h2>Download a single song</h2><p>One track, saved as its own file.</p></article>
+            <span class="how-or" aria-hidden="true">or</span>
+            <article class="how-tile"><span class="how-icon"><svg class="icon" aria-hidden="true"><use href="#icon-box"/></svg></span><h2><span class="crate-word">Crate</span> a playlist</h2><p>Package it into a ZIP.</p></article>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+
+  <dialog id="history-dialog" class="history-dialog" aria-labelledby="history-title">
+    <div class="history-panel" tabindex="-1" autofocus>
+      <header class="history-head">
+        <div><h2 id="history-title">History</h2><p id="history-count" class="history-count"></p></div>
+        <form method="dialog"><button class="history-done" aria-label="Close">Done</button></form>
+      </header>
+      <div id="history-body" class="history-body"></div>
+      <div id="history-empty" class="history-empty" hidden>
+        <span class="history-empty-icon"><svg class="icon" aria-hidden="true"><use href="#icon-music"/></svg></span>
+        <p>No downloads yet</p>
+      </div>
+      <footer class="history-foot"><button type="button" id="history-clear" class="history-clear">Clear history</button></footer>
+    </div>
+  </dialog>
+
+  <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
+    <form method="dialog" class="settings-form" id="settings-form" tabindex="-1" autofocus>
+      <header class="settings-head"><h2 id="settings-title">Settings</h2><button class="text-button muted" value="close" aria-label="Close">Done</button></header>
+
+      <section class="settings-group" aria-labelledby="g-look"><h3 id="g-look">Look</h3>
+        <div class="setting"><span>Theme</span><div class="segmented" role="radiogroup" aria-label="Theme">
+          <label><input type="radio" name="theme" value="system"><span>Auto</span></label><label><input type="radio" name="theme" value="light"><span>Light</span></label><label><input type="radio" name="theme" value="dark"><span>Dark</span></label></div></div>
+      </section>
+
+      <section class="settings-group" aria-labelledby="g-cursor"><h3 id="g-cursor">Cursor</h3>
+        <label class="setting"><span>Cursor effect</span><input class="switch" type="checkbox" name="visuals"></label>
+      </section>
+
+      <section class="settings-group" aria-labelledby="g-dl"><h3 id="g-dl">Downloads</h3>
+        <div class="setting"><span>Format</span><select name="dl-format" aria-label="Format"><option value="mp3">MP3</option><option value="aac">AAC</option><option value="opus">Opus</option><option value="flac">FLAC</option><option value="wav">WAV</option><option value="original">Original</option></select></div>
+        <p class="setting-note" id="settings-format-note"></p>
+        <div class="setting" id="quality-setting"><span>Quality</span><select name="quality" aria-label="Quality"><option value="128">128 kbps</option><option value="192">192 kbps</option><option value="256">256 kbps</option><option value="320">320 kbps</option></select></div>
+        <p class="setting-note" id="quality-note">SoundCloud’s own files are about 160 kbps, so a higher setting makes bigger files but can’t add detail.</p>
+        <label class="setting"><span>Number files <small>001 - …</small></span><input class="switch" type="checkbox" name="numbering"></label>
+        <label class="setting"><span>Song info</span><input class="switch" type="checkbox" name="tags"></label>
+        <label class="setting"><span>Cover art</span><input class="switch" type="checkbox" name="cover"></label>
+        <label class="setting"><span>Keep history</span><input class="switch" type="checkbox" name="history"></label>
+        <label class="setting"><span>Untick songs I already have</span><input class="switch" type="checkbox" name="skip_downloaded"></label>
+        <label class="setting"><span>Download single songs right away</span><input class="switch" type="checkbox" name="autostart"></label>
+        <label class="setting"><span>Clear link when finished</span><input class="switch" type="checkbox" name="clear"></label>
+      </section>
+
+      <section class="settings-group" id="phone-group" aria-labelledby="g-phone" hidden><h3 id="g-phone">Phone</h3>
+        <label class="setting"><span>Use Crate on my phone</span><input class="switch" type="checkbox" name="phone"></label>
+        <div id="phone-panel" class="phone-panel" hidden>
+          <div id="phone-qr" class="phone-qr" role="img" aria-label="Pairing code"></div>
+          <div class="phone-help">
+            <p><strong>Scan this with your iPhone camera</strong> to open Crate in Safari.</p>
+            <p class="setting-note" id="phone-note"></p>
+            <button type="button" id="phone-reset" class="text-button muted">Make a new code</button>
+          </div>
+        </div>
+      </section>
+
+      <footer class="settings-foot"><button type="button" id="settings-reset" class="text-button muted">Reset to defaults</button></footer>
+    </form>
+  </dialog>
+</body>
+</html>
